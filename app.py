@@ -2,15 +2,10 @@ from flask import Flask
 
 import config
 
-
-# web framework
-# web application
-# __main__
 app = Flask(__name__)
 # 设置 secret_key 来使用 flask 自带的 session
 # 这个字符串随便你设置什么内容都可以
 app.secret_key = config.secret_key
-
 
 """
 在 flask 中，模块化路由的功能由 蓝图（Blueprints）提供
@@ -22,10 +17,10 @@ app.secret_key = config.secret_key
 from routes.index import main as index_routes
 from routes.topic import main as topic_routes
 from routes.reply import main as reply_routes
+
 app.register_blueprint(index_routes)
 app.register_blueprint(topic_routes, url_prefix='/topic')
 app.register_blueprint(reply_routes, url_prefix='/reply')
-
 
 # 运行代码
 if __name__ == '__main__':
