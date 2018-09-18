@@ -19,6 +19,12 @@ class Topic(Model):
         self.ut = self.ct
         self.user_id = form.get('user_id', '')
 
+    # @classmethod
+    def user(self):
+        from .user import User
+        u = User.find(self.user_id)
+        return u.username
+
     def replies(self):
         from .reply import Reply
         ms = Reply.find_all(topic_id=self.id)
