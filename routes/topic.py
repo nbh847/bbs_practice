@@ -9,6 +9,7 @@ from flask import (
 from routes import *
 
 from models.topic import Topic
+from models.board import Board
 
 
 main = Blueprint('topic', __name__)
