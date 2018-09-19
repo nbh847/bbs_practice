@@ -18,7 +18,8 @@ main = Blueprint('topic', __name__)
 @main.route("/")
 def index():
     ms = Topic.all()
-    return render_template("topic/index.html", ms=ms)
+    bs = Board.all()
+    return render_template("topic/index.html", ms=ms, bs=bs)
 
 
 @main.route('/<int:id>')
@@ -38,4 +39,5 @@ def add():
 
 @main.route("/new")
 def new():
-    return render_template("topic/new.html")
+    bs = Board.all()
+    return render_template("topic/new.html", bs=bs)
