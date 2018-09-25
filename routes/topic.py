@@ -3,23 +3,29 @@ from flask import (
     request,
     redirect,
     url_for,
+    abort,
     Blueprint,
 )
 
 from routes import *
 
+import uuid
 from models.topic import Topic
 from models.board import Board
 
+from models.topic import Topic
 
 main = Blueprint('topic', __name__)
+
+csrf_tokens = set()
 
 
 @main.route("/")
 def index():
     ms = Topic.all()
-    bs = Board.all()
-    return render_template("topic/index.html", ms=ms, bs=bs)
+    token = str(uuid.uuid4())
+    csrf_tokens.add(token)
+    return render_template("topic/index.html", ms=ms, token=token)
 
 
 @main.route('/<int:id>')
@@ -35,6 +41,22 @@ def add():
     u = current_user()
     m = Topic.new(form, user_id=u.id)
     return redirect(url_for('.detail', id=m.id))
+
+
+@main.route("/delete")
+def delete():
+    token = request.args.get('token')
+    if token in csrf_tokens:
+        csrf_tokens.remove(token)
+        id = int(request.args.get('id'))
+        u = current_user()
+        if u is not None:
+            Topic.delete(id)
+            return redirect(url_for('.index'))
+        else:
+            abort(404)
+    else:
+        abort(403)
 
 
 @main.route("/new")
