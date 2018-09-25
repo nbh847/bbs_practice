@@ -10,6 +10,8 @@ from flask import (
 from routes import *
 
 import uuid
+from models.topic import Topic
+from models.board import Board
 
 from models.topic import Topic
 
@@ -24,6 +26,8 @@ def index():
     token = str(uuid.uuid4())
     csrf_tokens.add(token)
     return render_template("topic/index.html", ms=ms, token=token)
+    bs = Board.all()
+    return render_template("topic/index.html", ms=ms, bs=bs)
 
 
 @main.route('/<int:id>')
@@ -59,4 +63,5 @@ def delete():
 
 @main.route("/new")
 def new():
-    return render_template("topic/new.html")
+    bs = Board.all()
+    return render_template("topic/new.html", bs=bs)
