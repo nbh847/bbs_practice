@@ -43,6 +43,7 @@ def index():
 @main.route("/register", methods=['POST'])
 def register():
     form = request.form
+    print('register form: ({})'.format(form))
     # 用类函数来判断
     u = User.register(form)
     return redirect(url_for('.index'))

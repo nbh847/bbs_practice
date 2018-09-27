@@ -17,10 +17,9 @@ class Topic(Model):
         self.content = form.get('content', '')
         self.ct = int(time.time())
         self.ut = self.ct
-        self.user_id = form.get('user_id', '')
-        self.board_id = int(form.get('board_id', ''))
+        self.user_id = int(form.get('user_id', -1))
+        self.board_id = int(form.get('board_id', -1))
 
-    # @classmethod
     def user(self):
         from .user import User
         u = User.find(self.user_id)

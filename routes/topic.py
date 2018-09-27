@@ -22,17 +22,30 @@ csrf_tokens = set()
 
 @main.route("/")
 def index():
-    ms = Topic.all()
+    user = current_user()
+    board_id = int(request.args.get('board_id', 0))
+    if board_id:
+        print('is board id :{}'.format(board_id))
+        ms = Topic.find_all(board_id=board_id)
+    else:
+        print('not board id: {}'.format(board_id))
+        ms = Topic.all()
+    bs = Board.all()
     token = str(uuid.uuid4())
     csrf_tokens.add(token)
-    return render_template("topic/index.html", ms=ms, token=token)
+    return render_template("topic/index.html", ms=ms, bs=bs, user=user, token=token)
 
 
 @main.route('/<int:id>')
 def detail(id):
     m = Topic.get(id)
+    board_id = m.board_id
+    print('board id: {}'.format(board_id))
+    print('type board id: {}'.format(type(board_id)))
+    board = Board.get(board_id)
+    print('({})'.format(board))
     # 传递 topic 的所有 reply 到 页面中
-    return render_template("topic/detail.html", topic=m)
+    return render_template("topic/detail.html", topic=m, board=board)
 
 
 @main.route("/add", methods=["POST"])

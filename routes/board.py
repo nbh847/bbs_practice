@@ -23,6 +23,24 @@ def index():
 def add():
     form = request.form
     u = current_user()
-    print('DEBUG', form)
-    m = Board.new(form)
+    if u.role == 1:
+        print('is admin')
+        m = Board.new(form)
+        print('DEBUG', form)
+    else:
+        print('not admin')
+    return redirect(url_for('topic.index'))
+
+
+@main.route("/delete", methods=["POST"])
+def delete():
+    form = request.form
+    board_id = int(form.get('title', -1))
+    u = current_user()
+    if u.role == 1:
+        print('is admin')
+        m = Board.delete(board_id)
+        print('DEBUG, delete success', form)
+    else:
+        print('not admin, delete failed')
     return redirect(url_for('topic.index'))
