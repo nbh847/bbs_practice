@@ -1,3 +1,5 @@
+import os
+
 from flask import (
     render_template,
     request,
@@ -5,11 +7,13 @@ from flask import (
     session,
     url_for,
     Blueprint,
+    send_from_directory,
     make_response,
 )
 
 from models.user import User
-
+from config import user_file_director
+from werkzeug.utils import secure_filename
 from utils import log
 
 main = Blueprint('index', __name__)
@@ -71,3 +75,43 @@ def profile():
         return redirect(url_for('.index'))
     else:
         return render_template('profile.html', user=u)
+
+
+def allow_file(filename):
+    '''
+    检查上传文件的后缀, 判断文件名是否合法
+    '''
+    suffix = filename.split('.')[-1]
+    from config import accept_user_file_type
+    return suffix in accept_user_file_type
+
+
+@main.route('/addimg', methods=["POST"])
+def add_img():
+    u = current_user()
+
+    if u is None:
+        return redirect(url_for('.profile'))
+
+    if 'file' not in request.files:
+        return redirect(request.url)
+
+    file = request.files['file']
+    if file.filename == '':
+        return redirect(request.url)
+
+    if allow_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(user_file_director, filename))
+        u.user_image = filename
+        u.save()
+
+    return redirect(url_for('.profile'))
+
+
+# send_from_directory
+# nginx 静态文件
+@main.route('/uploads/<filename>')
+def uploads(filename):
+    print('filename: {}'.format(filename))
+    return send_from_directory(user_file_director, filename)

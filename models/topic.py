@@ -23,7 +23,7 @@ class Topic(Model):
     def user(self):
         from .user import User
         u = User.find(self.user_id)
-        return u.username
+        return u
 
     def replies(self):
         from .reply import Reply
