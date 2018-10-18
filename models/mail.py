@@ -1,5 +1,7 @@
 import time
+from sqlalchemy import Column, String
 from models import Model
+from .orm_base import BaseModel
 
 
 class Mail(Model):
@@ -21,3 +23,11 @@ class Mail(Model):
     def mark_read(self):
         self.read = True
         self.save()
+
+
+class MailNew(BaseModel):
+    __tablename__ = 'mail'
+    # 表的结构:
+    id = Column(String(20), primary_key=True)
+    name = Column(String(20))
+    title = Column(String(100))
