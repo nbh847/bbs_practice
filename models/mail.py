@@ -1,5 +1,4 @@
 import time
-from sqlalchemy import Column, String
 from models import Model
 from .orm_base import BaseModel
 
@@ -30,7 +29,9 @@ class MailNew(BaseModel):
     def __init__(self):
         super().__init__()
         self.module = self.get_module(self.__class__.__name__, id='Integer', name='String')
-        print(self.module.__tablename__)
+
+    def mark_read(self):
+        self.module.
 
 
 
