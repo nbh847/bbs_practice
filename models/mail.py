@@ -26,8 +26,12 @@ class Mail(Model):
 
 
 class MailNew(BaseModel):
-    __tablename__ = 'mail'
-    # 表的结构:
-    id = Column(String(20), primary_key=True)
-    name = Column(String(20))
-    title = Column(String(100))
+
+    def __init__(self):
+        super().__init__()
+        self.module = self.get_module(self.__class__.__name__, id='Integer', name='String')
+        print(self.module.__tablename__)
+
+
+
+
