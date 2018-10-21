@@ -1,34 +1,9 @@
-from sqlalchemy import Column, String, Integer, create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from functools import wraps
 
-# 创建对象的基类:
-Base = declarative_base()
 
-
-class BaseModel(Base):
-    # 表的名字:
-
-    __tablename__ = 'xixi'
-    print(__tablename__)
-
-    # 表的结构
-    # ...
+class BaseModel(object):
     def __init__(self):
-        self
         print('class name', self.__name__)
-
-    @classmethod
-    def get_dbsession(cls):
-        # 初始化数据库连接:
-        # //// 四个斜杠是绝对路径
-        absolute_db_file = '/home/weasny/program/myworkspace/bbs_club/data'
-        name = cls.__name__
-        engine = create_engine('sqlite:////{}/{}.db'.format(absolute_db_file, name))
-        # 创建DBSession类型:
-        DBSession = sessionmaker(bind=engine)
-        return DBSession
 
     @classmethod
     def has(cls, **kwargs):
@@ -52,13 +27,11 @@ class BaseModel(Base):
         # sort = kwargs.pop(flag_sort, None)
         key, value = '', ''
         for k, v in kwargs:
-            key, value = k, v
+            key, value = locals()[k], v
             break
         if key == '':
             return None
-        # 创建session对象:
-        session = cls.get_dbsession()
-        ds = session.query(cls).filter(setattr(cls, key, value))
+        ds = cls.select().where(cls.k )
         # if sort is not None:
         #     ds = ds.sort(sort)
         l = [cls._new_with_bson(d) for d in ds]

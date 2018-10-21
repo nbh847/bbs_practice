@@ -7,12 +7,11 @@ from peewee_migrate import Router
 
 
 def run(path):
-    db_items_module.db.connect()
+    items.db.connect()
 
     # migrate_table: 迁移表的名称
-    router = Router(db_items_module.db, ignore="basemodel", migrate_dir=path, migrate_table='toolsmigrate')
-
-    router.create(auto=db_items_module)
+    router = Router(items.db, ignore="basemodel", migrate_dir=path, migrate_table='bbsmigrate')
+    router.create(auto=items)
     router.run()
 
-    db_items_module.db.close()
+    items.db.close()
