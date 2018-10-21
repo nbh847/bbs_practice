@@ -1,9 +1,14 @@
 from functools import wraps
 
 
-class BaseModel(object):
+
+class BaseModel:
+
     def __init__(self):
-        print('class name', self.__name__)
+        print('print new module')
+
+    def get_module(self, tablename, **kwargs):
+        return TableCreator(tablename, **kwargs)
 
     @classmethod
     def has(cls, **kwargs):
@@ -54,23 +59,20 @@ class BaseModel(object):
         session = self.get_dbsession()
 
 
-Base = declarative_base()
-
-
 def TableCreator(tablename, **kwargs):
     def len_str(str):
-        str_list = {
-            'String': 200,
-        }
-        return
+        if str == 'String':
+            return Column(globals()[str](200), default='')
+        elif str == 'Boolean':
+            return Column(locals()[str], default=False)
 
     class MyTable(Base):
         __tablename__ = tablename
         for k, v in kwargs.items():
             if k == 'id':
-                id = Column(locals()[v], primary_key=True)
+                id = Column(Integer, primary_key=True, default=0)
             else:
-                k = Column(locals()[v](len_str(v)))
+                k = len_str(v)
 
     return MyTable
 
