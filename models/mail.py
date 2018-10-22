@@ -26,10 +26,10 @@ class Mail12(Model):
 
 
 # mail module
-class Mail(Mail, BaseModel):
+class Mail(MailNew):
 
     # 用来建立空的类实例
     @staticmethod
     def get_instance(mail_id):
-        record, created = Mail.get_or_create(id=mail_id)
-        return record, created
+        record, created = MailNew.get_or_create(mail_id=mail_id)
+        return record

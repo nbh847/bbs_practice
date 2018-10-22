@@ -2,7 +2,6 @@ from functools import wraps
 
 
 class BaseModel:
-
     def __init__(self):
         print('print new module')
 
@@ -71,9 +70,10 @@ class BaseModel:
         m.type = cls.__name__.lower()
         return m
 
+    def update_data(self, **field_dict):
+        print('self id', self.mail_id)
+        self.update(**field_dict).where(getattr(self, 'mail_id') == self.mail_id).execute()
 
-    def update(self, **field_dict):
-        self.update(**field_dict).where(self.id == self.id) .execute()
 
     @classmethod
     def test_func(cls):
