@@ -1,14 +1,10 @@
 from functools import wraps
 
 
-
 class BaseModel:
 
     def __init__(self):
         print('print new module')
-
-    def get_module(self, tablename, **kwargs):
-        return TableCreator(tablename, **kwargs)
 
     @classmethod
     def has(cls, **kwargs):
@@ -31,16 +27,16 @@ class BaseModel:
         # flag_sort = '__sort'
         # sort = kwargs.pop(flag_sort, None)
         key, value = '', ''
-        for k, v in kwargs:
-            key, value = locals()[k], v
+        for k, v in kwargs.items():
+            key, value = k, v
             break
         if key == '':
             return None
-        ds = cls.select().where(cls.k )
-        # if sort is not None:
-        #     ds = ds.sort(sort)
-        l = [cls._new_with_bson(d) for d in ds]
-        return l
+        ds = cls.select().where(getattr(cls, key) == value).get()
+        print(ds.id)
+        # print('ds', ds)
+        # l = [cls._new_with_bson(d) for d in ds]
+        # return l
 
     @classmethod
     def find_one(cls, **kwargs):
@@ -50,31 +46,38 @@ class BaseModel:
         # kwargs['deleted'] = False
         l = cls._find(**kwargs)
         # print('find one debug', kwargs, l)
-        if len(l) > 0:
-            return l[0]
+        # if len(l) > 0:
+        #     return l[0]
+        # else:
+        #     return None
+
+    @classmethod
+    def _new_with_bson(cls, bson):
+        """
+        这是给内部 all 这种函数使用的函数
+        从数据库中恢复一个 model，可以理解为给这个类赋予属性值
+        """
+        m = cls()
+        if k in bson:
+            setattr(m, k, bson[k])
         else:
-            return None
+            # 设置默认值
+            setattr(m, k, v)
+        setattr(m, '_id', bson['_id'])
+        # 这一句必不可少，否则 bson 生成一个新的_id
+        # FIXME, 因为现在的数据库里面未必有 type
+        # 所以在这里强行加上
+        # 以后洗掉db的数据后应该删掉这一句
+        m.type = cls.__name__.lower()
+        return m
 
-    def save(self):
-        session = self.get_dbsession()
 
+    def update(self, **field_dict):
+        self.update(**field_dict).where(self.id == self.id) .execute()
 
-def TableCreator(tablename, **kwargs):
-    def len_str(str):
-        if str == 'String':
-            return Column(globals()[str](200), default='')
-        elif str == 'Boolean':
-            return Column(locals()[str], default=False)
-
-    class MyTable(Base):
-        __tablename__ = tablename
-        for k, v in kwargs.items():
-            if k == 'id':
-                id = Column(Integer, primary_key=True, default=0)
-            else:
-                k = len_str(v)
-
-    return MyTable
+    @classmethod
+    def test_func(cls):
+        cls._new_with_bson('ll')
 
 
 def close_connection(session):

@@ -1,9 +1,10 @@
 import time
 from models import Model
+from .items import *
 from .orm_base import BaseModel
 
 
-class Mail(Model):
+class Mail12(Model):
     def __init__(self, form):
         self.id = None
         self.content = form.get('content', '')
@@ -24,15 +25,11 @@ class Mail(Model):
         self.save()
 
 
-class MailNew(BaseModel):
+# mail module
+class Mail(Mail, BaseModel):
 
-    def __init__(self):
-        super().__init__()
-        self.module = self.get_module(self.__class__.__name__, id='Integer', name='String')
-
-    def mark_read(self):
-        self.module.
-
-
-
-
+    # 用来建立空的类实例
+    @staticmethod
+    def get_instance(mail_id):
+        record, created = Mail.get_or_create(id=mail_id)
+        return record, created
