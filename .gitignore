@@ -5,3 +5,4 @@ config.py
 data/
 gua.log.txt
 user_image/
+migrations/
