@@ -1,7 +1,6 @@
 import time
 from models import Model
-from .items import *
-from .orm_base import BaseModel
+from .items import MailNew, BaseModel
 
 
 class Mail12(Model):
@@ -26,7 +25,11 @@ class Mail12(Model):
 
 
 # mail module
-class Mail(MailNew):
+class Mail(BaseModel):
+
+    def __init__(self):
+        super().__init__()
+        self.module = MailNew
 
     # 用来建立空的类实例
     @staticmethod

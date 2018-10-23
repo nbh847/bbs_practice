@@ -1,12 +1,13 @@
 from functools import wraps
+from helper.date import Date
+from helper.logging import mysql_log
 
 
 class BaseModel:
     def __init__(self):
-        print('print new module')
+        pass
 
-    @classmethod
-    def has(cls, **kwargs):
+    def has(self, **kwargs):
         """
         检查一个元素是否在数据库中 用法如下
         User.has(id=1)
@@ -15,53 +16,47 @@ class BaseModel:
         """
         return cls.find_one(**kwargs) is not None
 
-    @classmethod
-    def _find(cls, **kwargs):
+    def _find(self, **kwargs):
         """
         db 数据查询
         """
-        name = cls.__name__
-        # TODO 过滤掉被删除的元素
-        # kwargs['deleted'] = False
-        # flag_sort = '__sort'
-        # sort = kwargs.pop(flag_sort, None)
-        key, value = '', ''
+        query = self.module.select()
         for k, v in kwargs.items():
-            key, value = k, v
-            break
-        if key == '':
-            return None
-        ds = cls.select().where(getattr(cls, key) == value).get()
-        print(ds.id)
-        # print('ds', ds)
-        # l = [cls._new_with_bson(d) for d in ds]
+            query = query.where(getattr(self.module, k) == v)
+        # for q in query:
+        #     print(q.__dict__)
+        # for item in self.module.__dict__:
+        #     if item.startswith('_'):
+        #         print('_ : {}'.format(item))
+        #     else:
+        #         print(item)
+        # print(self.module.__name__)
+        # l = [self._new_with_bson(d) for d in query]
         # return l
 
-    @classmethod
-    def find_one(cls, **kwargs):
+    def find_one(self, **kwargs):
         """
         """
         # TODO 过滤掉被删除的元素
         # kwargs['deleted'] = False
-        l = cls._find(**kwargs)
+        l = self._find(**kwargs)
         # print('find one debug', kwargs, l)
         # if len(l) > 0:
         #     return l[0]
         # else:
         #     return None
 
-    @classmethod
-    def _new_with_bson(cls, bson):
+    def _new_with_bson(self, bson):
         """
         这是给内部 all 这种函数使用的函数
         从数据库中恢复一个 model，可以理解为给这个类赋予属性值
         """
-        m = cls()
-        if k in bson:
-            setattr(m, k, bson[k])
-        else:
-            # 设置默认值
-            setattr(m, k, v)
+        for d in self.__dict__:
+            if fields in bson:
+                setattr(self, k, bson[k])
+            else:
+                # 设置默认值
+                setattr(m, k, v)
         setattr(m, '_id', bson['_id'])
         # 这一句必不可少，否则 bson 生成一个新的_id
         # FIXME, 因为现在的数据库里面未必有 type
@@ -70,12 +65,11 @@ class BaseModel:
         m.type = cls.__name__.lower()
         return m
 
-    def update_data(self, **field_dict):
-        print('self id', self.mail_id)
-        self.update(**field_dict).where(getattr(self, 'mail_id') == self.mail_id).execute()
+    def update_data(self, key_id, **field_dict):
+        ct = Date.now().format()
+        field_dict.update({'ct': ct})
+        self.module.update(**field_dict).where(getattr(self.module, 'mail_id') == key_id).execute()
 
-
-    @classmethod
     def test_func(cls):
         cls._new_with_bson('ll')
 
