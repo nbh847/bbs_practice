@@ -2,6 +2,8 @@ from functools import wraps
 from helper.date import Date
 from helper.logging import mysql_log
 
+import time
+
 
 class BaseModel:
     def __init__(self):
@@ -23,16 +25,11 @@ class BaseModel:
         query = self.module.select()
         for k, v in kwargs.items():
             query = query.where(getattr(self.module, k) == v)
-        # for q in query:
-        #     print(q.__dict__)
-        # for item in self.module.__dict__:
-        #     if item.startswith('_'):
-        #         print('_ : {}'.format(item))
-        #     else:
-        #         print(item)
-        # print(self.module.__name__)
-        # l = [self._new_with_bson(d) for d in query]
-        # return l
+            # print(type(query))
+            # print(query.mail_id)
+            # time.sleep(111)
+        l = [self._new_with_bson(d) for d in query]
+        return l
 
     def find_one(self, **kwargs):
         """
@@ -48,22 +45,14 @@ class BaseModel:
 
     def _new_with_bson(self, bson):
         """
-        这是给内部 all 这种函数使用的函数
-        从数据库中恢复一个 model，可以理解为给这个类赋予属性值
+        这是给内部 all 这种函数使用的函数;
+        从数据库中恢复一个 model，可以理解为给这个类赋予属性值;
+        调用self.__dict__可见赋予的属性
         """
-        for d in self.__dict__:
-            if fields in bson:
-                setattr(self, k, bson[k])
-            else:
-                # 设置默认值
-                setattr(m, k, v)
-        setattr(m, '_id', bson['_id'])
-        # 这一句必不可少，否则 bson 生成一个新的_id
-        # FIXME, 因为现在的数据库里面未必有 type
-        # 所以在这里强行加上
-        # 以后洗掉db的数据后应该删掉这一句
-        m.type = cls.__name__.lower()
-        return m
+        for m in self.module.__dict__:
+            if not m.startswith('_') and m != 'DoesNotExist':
+                setattr(self, m, getattr(bson, m))
+        return self
 
     def update_data(self, key_id, **field_dict):
         ct = Date.now().format()
