@@ -18,8 +18,8 @@ class Mail(BaseModel):
 
     def set_sender(self, sender_id):
         self.sender_id = sender_id
-        self.save_data()
+        self.update_data()
 
     def mark_read(self):
         self.read = True
-        self.save_data()
+        self.update_data()

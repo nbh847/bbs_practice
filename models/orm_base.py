@@ -125,16 +125,25 @@ class BaseModel:
         return self
 
     def save_data(self):
-        # print(self)
-        # return
+        """
+        create new module
+        实际是用来创建新的数据
+        :return:
+        """
         mdict = {m: getattr(self, m, '') for m in self._get_module_dict() if hasattr(self, m)}
         self.module.create(**mdict)
         # mongua.db[name].save(self.__dict__)
 
-    def update_data(self, key_id, **field_dict):
+    def update_data(self):
+        """
+        save module
+        实际是用来保存更新后的数据
+        :return:
+        """
+        ujson = self.json()
         ct = Date.now().format()
-        field_dict.update({'ct': ct})
-        self.module.update(**field_dict).where(getattr(self.module, 'main_id') == key_id).execute()
+        ujson.update({'ct': ct})
+        self.module.update(**ujson).where(getattr(self.module, 'main_id') == ujson.get('main_id')).execute()
         mysql_log.info('更新数据成功')
 
     def delete(self, **kwargs):
