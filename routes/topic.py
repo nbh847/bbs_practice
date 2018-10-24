@@ -26,10 +26,10 @@ def index():
     board_id = int(request.args.get('board_id', 0))
     if board_id:
         print('is board id :{}'.format(board_id))
-        ms = Topic.find_all(board_id=board_id)
+        ms = Topic().find_all(board_id=board_id)
     else:
         print('not board id: {}'.format(board_id))
-        ms = Topic.all()
+        ms = Topic().all()
     bs = Board.all()
     token = str(uuid.uuid4())
     csrf_tokens.add(token)
