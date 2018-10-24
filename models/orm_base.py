@@ -153,6 +153,15 @@ class BaseModel:
         # TODO, 增加一个 type 属性
         return d
 
+    def data_count(self, **kwargs):
+        """
+        神奇的函数, 查看数据的个数
+        u.data_count(Comment)
+
+        :return: int
+        """
+        return len(self.find_all(**kwargs))
+
     def __repr__(self):
         class_name = self.__class__.__name__
         properties = ('{0} = {1}'.format(k, v) for k, v in self.__dict__.items())
