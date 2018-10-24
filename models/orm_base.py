@@ -77,6 +77,10 @@ class BaseModel:
             return None
 
     def _get_module_dict(self):
+        """
+        获取 module 的结构数据
+        :return:
+        """
         mdict = self.module.__dict__
         d = []
         for m in mdict:
@@ -89,24 +93,24 @@ class BaseModel:
         new 是给外部使用的函数
         """
         # 创建一个空对象
-        m = self.module()
+        # m = self.module()
         # 把定义的数据写入空对象, 未定义的数据输出错误
         fields = self._get_module_dict().copy()
         if form is None:
             form = {}
         for f in fields:
             if f in form:
-                setattr(m, f, form[f])
+                setattr(self, f, form[f])
         # 处理额外的参数 kwargs
         for k, v in kwargs.items():
-            if hasattr(m, k):
-                setattr(m, k, v)
+            if hasattr(self, k):
+                setattr(self, k, v)
             else:
                 raise KeyError
         now = Date().now().format()
-        m.ct = now
+        self.ct = now
         self.save_data()
-        return m
+        return self
 
     def _new_with_bson(self, bson):
         """
@@ -120,16 +124,16 @@ class BaseModel:
         return self
 
     def save_data(self):
-        mdict = {m:getattr(self.module, m) for m in self._get_module_dict()}
-        print(mdict)
-        return
+        # print(self)
+        # return
+        mdict = {m:getattr(self, m, '') for m in self._get_module_dict() if hasattr(self, m)}
         self.module.create(**mdict)
         # mongua.db[name].save(self.__dict__)
 
     def update_data(self, key_id, **field_dict):
         ct = Date.now().format()
         field_dict.update({'ct': ct})
-        self.module.update(**field_dict).where(getattr(self.module, 'mail_id') == key_id).execute()
+        self.module.update(**field_dict).where(getattr(self.module, 'main_id') == key_id).execute()
 
     def __repr__(self):
         class_name = self.__class__.__name__
