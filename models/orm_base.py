@@ -88,7 +88,6 @@ class BaseModel:
         """
         new 是给外部使用的函数
         """
-        name = self.module.__name__
         # 创建一个空对象
         m = self.module()
         # 把定义的数据写入空对象, 未定义的数据输出错误
@@ -106,7 +105,7 @@ class BaseModel:
                 raise KeyError
         now = Date().now().format()
         m.ct = now
-        self.save()
+        self.save_data()
         return m
 
     def _new_with_bson(self, bson):
@@ -120,9 +119,12 @@ class BaseModel:
                 setattr(self, m, getattr(bson, m))
         return self
 
-    def save(self):
-        name = self.module.__class__.__name__
-        mongua.db[name].save(self.__dict__)
+    def save_data(self):
+        mdict = {m:getattr(self.module, m) for m in self._get_module_dict()}
+        print(mdict)
+        return
+        self.module.create(**mdict)
+        # mongua.db[name].save(self.__dict__)
 
     def update_data(self, key_id, **field_dict):
         ct = Date.now().format()
