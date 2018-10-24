@@ -110,6 +110,7 @@ class BaseModel:
         now = Date().now().format()
         self.ct = now
         self.save_data()
+        mysql_log.info('新增数据成功')
         return self
 
     def _new_with_bson(self, bson):
@@ -126,7 +127,7 @@ class BaseModel:
     def save_data(self):
         # print(self)
         # return
-        mdict = {m:getattr(self, m, '') for m in self._get_module_dict() if hasattr(self, m)}
+        mdict = {m: getattr(self, m, '') for m in self._get_module_dict() if hasattr(self, m)}
         self.module.create(**mdict)
         # mongua.db[name].save(self.__dict__)
 
@@ -134,6 +135,17 @@ class BaseModel:
         ct = Date.now().format()
         field_dict.update({'ct': ct})
         self.module.update(**field_dict).where(getattr(self.module, 'main_id') == key_id).execute()
+        mysql_log.info('更新数据成功')
+
+    def delete(self, **kwargs):
+        try:
+            query = self.module.delete()
+            for k, v in kwargs.items():
+                query = query.where(getattr(self.module, k) == v)
+            query.execute()
+            mysql_log.info('删除数据成功')
+        except AttributeError as exc:
+            mysql_log.warn(exc)
 
     def __repr__(self):
         class_name = self.__class__.__name__
