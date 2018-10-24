@@ -18,7 +18,7 @@ db = pw.MySQLDatabase(MYSQL_DB_NAME,
 
 # mail module
 class MailNew(pw.Model):
-    mail_id = pw.IntegerField(verbose_name="mail id", primary_key=True, default=0)
+    main_id = pw.IntegerField(verbose_name="mail id", primary_key=True, default=0)
     content = pw.CharField(verbose_name='mail content', max_length=800, default='')
     title = pw.CharField(verbose_name='mail title', max_length=200, default='')
     read = pw.BooleanField(verbose_name='mail title', default=False)
