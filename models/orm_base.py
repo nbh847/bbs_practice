@@ -147,6 +147,12 @@ class BaseModel:
         except AttributeError as exc:
             mysql_log.warn(exc)
 
+    def json(self):
+        _dict = self._get_module_dict()
+        d = {k: getattr(self, k) for k in _dict}
+        # TODO, 增加一个 type 属性
+        return d
+
     def __repr__(self):
         class_name = self.__class__.__name__
         properties = ('{0} = {1}'.format(k, v) for k, v in self.__dict__.items())
